@@ -1,0 +1,32 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - heading "CO2STER 3D Art Asset Viewer" [level=1] [ref=e3]
+    - generic [ref=e4]: Click tile type to focus | Scroll to zoom | Drag to rotate
+  - generic [ref=e5]:
+    - button "幼林" [ref=e6] [cursor=pointer]:
+      - generic [ref=e8]: 幼林
+    - button "林地" [ref=e9] [cursor=pointer]:
+      - generic [ref=e11]: 林地
+    - button "石场" [ref=e12] [cursor=pointer]:
+      - generic [ref=e14]: 石场
+    - button "采石场" [ref=e15] [cursor=pointer]:
+      - generic [ref=e17]: 采石场
+    - button "伐木场" [ref=e18] [cursor=pointer]:
+      - generic [ref=e20]: 伐木场
+    - button "空地" [ref=e21] [cursor=pointer]:
+      - generic [ref=e23]: 空地
+    - button "聚落" [ref=e24] [cursor=pointer]:
+      - generic [ref=e26]: 聚落
+    - button "火电厂" [ref=e27] [cursor=pointer]:
+      - generic [ref=e29]: 火电厂
+    - button "研究所" [ref=e30] [cursor=pointer]:
+      - generic [ref=e32]: 研究所
+    - button "风力发电机" [ref=e33] [cursor=pointer]:
+      - generic [ref=e35]: 风力发电机
+    - button "太阳能板" [ref=e36] [cursor=pointer]:
+      - generic [ref=e38]: 太阳能板
+    - button "生态林地" [ref=e39] [cursor=pointer]:
+      - generic [ref=e41]: 生态林地
+    - button "生态林地(建设中)" [ref=e42] [cursor=pointer]:
+      - generic [ref=e44]: 生态林地(建设中)
+  - generic [ref=e46]: Low-Poly Stylized | flatShading | MeshStandardMaterial
