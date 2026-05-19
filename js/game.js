@@ -8,7 +8,7 @@ import { updateSettlementAnims, processSettlePhase, addSettlementAnim } from './
 import { initInput } from './input.js';
 import { drawHexTile } from './render/hex.js';
 import { drawTileDecorations } from './render/buildings.js';
-import { drawResourceUI, drawResourceDetailPanel, drawActionPointUI, drawCO2UI, drawPowerUI, drawSciPointsUI, drawTurnUI, drawCivilizationUI, drawCrisisUI, drawActionPanel, drawTechTreePanel, drawResearchPanel, drawGameOverScreen, drawCO2AbsorbUI, drawCO2TopUI } from './render/ui.js';
+import { drawResourceUI, drawResourceDetailPanel, drawActionPointUI, drawCO2UI, drawPowerUI, drawSciPointsUI, drawTurnUI, drawCivilizationUI, drawCrisisUI, drawActionPanel, drawTechTreePanel, drawResearchPanel, drawGameOverScreen, drawCO2AbsorbUI, drawCO2TopUI, drawVictoryButton } from './render/ui.js';
 import { drawCO2Particles, drawCO2AnimParticles, updateCO2AnimParticles, drawSettlementAnims, updateDialogueAnims, drawDialogueAnims, updateBeastDialogueAnim, drawBeastDialogueAnim, updatePrologue, drawPrologue, updateEndingAnim, getEndingMapTransform, shouldHideBeast, drawEndingOverlay, updateIntro, drawIntro, getShrinkGazeRatio } from './render/effects.js';
 import { hexCorners } from './render/hex.js';
 import { updateBGM, startBGM } from './bgm.js';
@@ -685,7 +685,9 @@ function drawBackground(ctx, canvas) {
 
   // 碳兽 - CO2≥20时从背景中浮现的巨型怪物
   // 目标：CO2=20时碳兽初现，形象相当于原CO2=60的大小（gazeRatio≈0.31）
-  if (gameState.displayCo2 >= 20 && !shouldHideBeast()) {
+  // 好结局shrink阶段：即使CO2很低也强制显示碳兽
+  const forceShowBeast = endingState.active && endingState.type === 'good' && endingState.phase === 'shrink';
+  if ((gameState.displayCo2 >= 20 || forceShowBeast) && !shouldHideBeast()) {
     // gazeRatio 映射：CO2=20→0.31，CO2=150→1.0
     // 好结局shrink阶段：插值缩小到中等CO2形象
     const shrinkGaze = getShrinkGazeRatio();
@@ -694,15 +696,18 @@ function drawBackground(ctx, canvas) {
 
     // 整体透明度：CO2低时碳兽如幽灵般半透明，随CO2升高逐渐凝实
     // 20→0.15(几乎透明), 40→0.35, 60→0.55, 80→0.7, 100→0.85, 150→1.0
+    // 好结局shrink阶段：强制足够的透明度以便看到缩小动画
     let beastAlpha;
-    if (gameState.displayCo2 <= 40) {
+    if (forceShowBeast) {
+      beastAlpha = 0.7;
+    } else if (gameState.displayCo2 <= 40) {
       beastAlpha = 0.15 + ((gameState.displayCo2 - 20) / 20) * 0.20;
     } else if (gameState.displayCo2 <= 80) {
       beastAlpha = 0.35 + ((gameState.displayCo2 - 40) / 40) * 0.35;
     } else {
       beastAlpha = 0.7 + ((gameState.displayCo2 - 80) / 70) * 0.3;
     }
-    beastAlpha = Math.min(beastAlpha, 1);
+    beastAlpha = Math.max(0, Math.min(beastAlpha, 1));
 
     ctx.save();
     ctx.globalAlpha = beastAlpha;
@@ -1323,6 +1328,7 @@ function draw() {
   drawCO2Particles(ctx);
   drawCO2AnimParticles(ctx);
   drawTechTreePanel(ctx, canvas);
+  drawVictoryButton(ctx, canvas);
   // 旧版结局界面由结局动画替代
   if (!endingState.active) {
     drawGameOverScreen(ctx, canvas);

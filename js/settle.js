@@ -3,7 +3,7 @@
 import { ROWS, COLS, HEX_R, PERSPECTIVE, SETTLE_PHASE_DURATION, CO2_DEATH_THRESHOLD, CO2_GREENHOUSE_THRESHOLD, HEAT_ISLAND_MIN_BUILDINGS } from './config.js';
 import { TILE_TYPES } from './tile-types.js';
 import { gameState, industrialResidue, uiState, settlementAnims, settleData, setSettleData, co2AnimParticles, beastState, triggerPrologue, triggerEnding } from './state.js';
-import { tiles, getTileCenter, getTileEffectiveStats, getEfficiency, getTurnResourceBalance, countBuildings, checkLevel2Upgrade, checkLevel3Upgrade } from './map.js';
+import { tiles, getTileCenter, getTileEffectiveStats, getEfficiency, getTurnResourceBalance, countBuildings, countSettlements, checkLevel2Upgrade, checkLevel3Upgrade } from './map.js';
 import { playResourceGainSound, playGrowthSound, playLevelUpMusic, playVictoryMusic, playGameOverMusic } from './audio.js';
 
 // === 浮动文字动画 ===
@@ -285,13 +285,11 @@ function _processSettlePhaseInner(canvas) {
     uiState.settleTimer = 0;
     uiState.settlePhase++;
     if (uiState.settlePhase > 6) {
-      // 胜利条件：净生产力≥50 + 净发电力≥15 + CO2=0
+      // 胜利条件：净生产力≥50 + 净发电力≥15 + CO2=0 + 聚落≥7
       if (!gameState.gameOver && gameState.civilizationLevel >= 3 && gameState.co2 === 0) {
         const balance = getTurnResourceBalance();
         if (balance.net >= 50 && balance.power >= 15 && countSettlements() >= 7) {
-          gameState.gameWon = true;
-          triggerEnding('good');
-          playVictoryMusic();
+          gameState.victoryReady = true;
         }
       }
       uiState.isSettling = false;

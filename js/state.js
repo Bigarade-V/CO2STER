@@ -13,6 +13,7 @@ export const gameState = {
   greenhouseEffect: false,
   gameOver: false,
   gameWon: false,
+  victoryReady: false,  // 胜利条件已满足，等待玩家点击按钮
   unlockedResearches: []  // 已解锁的研究项目ID列表
 };
 

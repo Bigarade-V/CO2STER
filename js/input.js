@@ -2,10 +2,10 @@
 
 import { ROWS, COLS } from './config.js';
 import { TILE_TYPES } from './tile-types.js';
-import { gameState, uiState, industrialResidue, triggerPrologue, endingState } from './state.js';
+import { gameState, uiState, industrialResidue, triggerPrologue, triggerEnding, endingState } from './state.js';
 import { tiles, hitTestTile, getTileCenter, hasAdjacentArtificial, hasAdjacentSettlementOrQuarry, countBuildings, countSettlements, getTurnResourceBalance, initTiles } from './map.js';
 import { endTurn } from './settle.js';
-import { playChopSound, playPlantSound, playBuildSound, playResearchSound, playErrorSound } from './audio.js';
+import { playChopSound, playPlantSound, playBuildSound, playResearchSound, playErrorSound, playVictoryMusic } from './audio.js';
 
 let canvas = null;
 
@@ -39,6 +39,18 @@ function handleClick(e) {
 
   if (uiState.isSettling) return;
   if (gameState.gameOver || gameState.gameWon) return;
+
+  // 胜利按钮点击
+  if (gameState.victoryReady && !endingState.active) {
+    const vb = window._victoryButton;
+    if (vb && mx >= vb.x && mx <= vb.x + vb.w && my >= vb.y && my <= vb.y + vb.h) {
+      gameState.victoryReady = false;
+      gameState.gameWon = true;
+      triggerEnding('good');
+      playVictoryMusic();
+      return;
+    }
+  }
 
   // 科技树面板关闭按钮
   if (uiState.showTechTree) {
@@ -329,6 +341,7 @@ function resetGame() {
   gameState.greenhouseEffect = false;
   gameState.gameOver = false;
   gameState.gameWon = false;
+  gameState.victoryReady = false;
   gameState.unlockedResearches = [];
   uiState.selectedTile = null;
   uiState.actionPanel = null;

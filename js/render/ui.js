@@ -2,7 +2,7 @@
 
 import { HEX_R, HEX_W, V_SPACING, PERSPECTIVE, ROWS, COLS, seededRandom, rgbStr } from '../config.js';
 import { TILE_TYPES } from '../tile-types.js';
-import { gameState, uiState, industrialResidue } from '../state.js';
+import { gameState, uiState, industrialResidue, endingState } from '../state.js';
 import { countBuildings, countSettlements, getTurnResourceBalance, getEfficiency, getTileEffectiveStats, tiles } from '../map.js';
 import { drawCrate3D } from './terrain.js';
 
@@ -492,6 +492,40 @@ export function drawCivilizationUI(ctx, canvas) {
     ctx.restore();
     ctx.textAlign = 'left';
   }
+}
+
+// === 胜利按钮 ===
+export function drawVictoryButton(ctx, canvas) {
+  if (!gameState.victoryReady || gameState.gameWon || gameState.gameOver) return;
+  if (endingState.active) return;
+
+  const btnW = 240, btnH = 48;
+  const cx = canvas.width / 2;
+  const btnX = cx - btnW / 2;
+  const btnY = canvas.height - 70;
+
+  // 绿色渐变按钮
+  const grad = ctx.createLinearGradient(btnX, btnY, btnX, btnY + btnH);
+  grad.addColorStop(0, 'rgba(56,142,60,0.9)');
+  grad.addColorStop(1, 'rgba(27,94,32,0.85)');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.roundRect(btnX, btnY, btnW, btnH, 10);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(129,199,132,0.6)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // 白色文字
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 18px "Microsoft YaHei", "Segoe UI", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('绿水青山，科学发展', cx, btnY + btnH / 2);
+  ctx.textAlign = 'left';
+
+  // 记录按钮位置供点击检测
+  window._victoryButton = { x: btnX, y: btnY, w: btnW, h: btnH };
 }
 
 // === 危机指示器 ===
