@@ -73,15 +73,16 @@ function handleClick(e) {
       if (act._rect && mx >= act._rect.x && mx <= act._rect.x + act._rect.w &&
           my >= act._rect.y && my <= act._rect.y + act._rect.h) {
         hitAction = true;
-        if (gameState.resources < act.cost) { playErrorSound(); return; }
+        if (gameState.resources < act.cost && act.label !== '植树' && act.label !== '拆除') { playErrorSound(); return; }
         if (act.disabledReason) { playErrorSound(); return; }
         if (act.reqSciPoints && gameState.sciPoints < act.reqSciPoints) { playErrorSound(); return; }
         {
           const netCost = act.cost - (act.reward || 0);
           const isHarvest = act.reward > 0 && act.cost === 0;
+          const isFreeAction = act.label === '植树' || act.label === '拆除';
           const netBalance = getTurnResourceBalance();
-          const consumptionNeeded = isHarvest ? 0 : Math.max(0, -netBalance.net);
-          if (!isHarvest && gameState.resources - netCost < consumptionNeeded) { playErrorSound(); return; }
+          const consumptionNeeded = (isHarvest || isFreeAction) ? 0 : Math.max(0, -netBalance.net);
+          if (!isHarvest && !isFreeAction && gameState.resources - netCost < consumptionNeeded) { playErrorSound(); return; }
         }
         if (act.reqPower && gameState.power < act.reqPower) { playErrorSound(); return; }
 

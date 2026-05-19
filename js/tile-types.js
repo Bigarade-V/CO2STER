@@ -109,7 +109,6 @@ export const TILE_TYPES = {
     topColor: '#4565a0', sideColor1: '#355590', sideColor2: '#254580',
     isArtificial: true,
     transitions: [
-      { target: 'empty', cost: 0, reward: 0, label: '拆除' },
       { target: 'research_lab', cost: 0, reward: 0, label: '研发风力发电', reqSciPoints: 4, unlockResearch: 'wind_power' },
       { target: 'research_lab', cost: 0, reward: 0, label: '研发太阳能发电', reqSciPoints: 12, unlockResearch: 'solar_power' },
       { target: 'research_lab', cost: 0, reward: 0, label: '研发生态林地', reqSciPoints: 8, unlockResearch: 'eco_forest' }
@@ -144,7 +143,7 @@ export const TILE_TYPES = {
     name: '生态林地',
     topColor: '#0d5a18', sideColor1: '#084812', sideColor2: '#04360c',
     isArtificial: false,
-    transitions: [{ target: 'empty', cost: 0, reward: 0, label: '拆除', isIndustrial: true }],
+    transitions: [],
     co2Change: -2,
     resourceChange: 0,
     powerChange: 0,

@@ -85,30 +85,33 @@ export function drawResourceUI(ctx, canvas) {
   ctx.fillText((balance.net >= 0 ? '+' : '') + balance.net, numX + resWidth + 12, row1);
 
   // 第2行：电力图标 + 电力数字 + 净发电量(右侧)
-  if (gameState.civilizationLevel >= 2) {
-    drawLightning(ctx, panelX + 22, row2, gameState.power > 0);
-    ctx.fillStyle = gameState.power > 0 ? '#ffeb3b' : '#999';
-    ctx.font = 'bold 22px "Segoe UI", "Microsoft YaHei", sans-serif';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(gameState.power, numX, row2);
-    // 净发电量
-    const powerBalance = getTurnResourceBalance();
-    const netPower = powerBalance.power;
-    ctx.fillStyle = netPower >= 0 ? '#4caf50' : '#e57373';
-    ctx.font = 'bold 12px "Segoe UI", "Microsoft YaHei", sans-serif';
-    ctx.textBaseline = 'middle';
-    const powerWidth = ctx.measureText(String(gameState.power)).width;
-    ctx.fillText((netPower >= 0 ? '+' : '') + netPower, numX + powerWidth + 12, row2);
-  }
+  drawLightning(ctx, panelX + 22, row2, gameState.power > 0);
+  ctx.fillStyle = gameState.power > 0 ? '#ffeb3b' : '#999';
+  ctx.font = 'bold 22px "Segoe UI", "Microsoft YaHei", sans-serif';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(gameState.power, numX, row2);
+  // 净发电量
+  const powerBalance = getTurnResourceBalance();
+  const netPower = powerBalance.power;
+  ctx.fillStyle = netPower >= 0 ? '#4caf50' : '#e57373';
+  ctx.font = 'bold 12px "Segoe UI", "Microsoft YaHei", sans-serif';
+  ctx.textBaseline = 'middle';
+  const powerWidth = ctx.measureText(String(gameState.power)).width;
+  ctx.fillText((netPower >= 0 ? '+' : '') + netPower, numX + powerWidth + 12, row2);
 
-  // 第3行：科技点图标 + 科技点数字
-  if (gameState.civilizationLevel >= 3) {
-    drawGear(ctx, panelX + 20, row3, 12);
-    ctx.fillStyle = '#ce93d8';
-    ctx.font = 'bold 22px "Segoe UI", "Microsoft YaHei", sans-serif';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(gameState.sciPoints, numX, row3);
-  }
+  // 第3行：科技点图标 + 科技点数字 + 净科技点产出
+  drawGear(ctx, panelX + 20, row3, 12);
+  ctx.fillStyle = '#ce93d8';
+  ctx.font = 'bold 22px "Segoe UI", "Microsoft YaHei", sans-serif';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(gameState.sciPoints, numX, row3);
+  // 净科技点产出
+  const netSci = powerBalance.sciPoints;
+  ctx.fillStyle = netSci >= 0 ? '#4caf50' : '#e57373';
+  ctx.font = 'bold 12px "Segoe UI", "Microsoft YaHei", sans-serif';
+  ctx.textBaseline = 'middle';
+  const sciWidth = ctx.measureText(String(gameState.sciPoints)).width;
+  ctx.fillText((netSci >= 0 ? '+' : '') + netSci, numX + sciWidth + 12, row3);
 
   window._drawResourceUI_rect = { x: panelX, y: panelY, w: 150, h: 140 };
 }
@@ -457,11 +460,13 @@ export function drawCivilizationUI(ctx, canvas) {
     const needProd = 50 - balance.net;
     const needPower = 15 - balance.power;
     const needCO2 = gameState.co2;
+    const needSettle = 7 - countSettlements();
     const prodOk = needProd <= 0;
     const powerOk = needPower <= 0;
     const co2Ok = needCO2 <= 0;
-    const metCount = (prodOk ? 1 : 0) + (powerOk ? 1 : 0) + (co2Ok ? 1 : 0);
-    if (metCount === 3) {
+    const settleOk = needSettle <= 0;
+    const metCount = (prodOk ? 1 : 0) + (powerOk ? 1 : 0) + (co2Ok ? 1 : 0) + (settleOk ? 1 : 0);
+    if (metCount === 4) {
       missionText = '↓ 胜利条件已满足！';
       missionColor = '#4caf50';
     } else {
@@ -469,6 +474,7 @@ export function drawCivilizationUI(ctx, canvas) {
       if (!prodOk) parts.push('净生产力+' + needProd);
       if (!powerOk) parts.push('净发电力+' + needPower);
       if (!co2Ok) parts.push('CO2-' + needCO2);
+      if (!settleOk) parts.push('聚落+' + needSettle);
       missionText = '↓ ' + parts.join(' ') + ' 胜利';
     }
   }

@@ -1031,7 +1031,10 @@ function draw() {
     ctx.translate(-mcx, -mcy);
   }
 
-  // === 绘制地块 ===
+  // === 绘制地块（灭亡动画结束后不再渲染） ===
+  const shouldDrawTiles = !(endingState.active && endingState.type === 'bad' &&
+    (endingState.phase === 'blackout' || endingState.phase === 'title'));
+  if (shouldDrawTiles) {
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       try {
@@ -1048,9 +1051,10 @@ function draw() {
       }
     }
   }
+  } // end shouldDrawTiles
 
   // === 环境光 ===
-  drawAmbientLight(ctx);
+  if (shouldDrawTiles) drawAmbientLight(ctx);
 
   // === UI叠加（倒计时、残留标记等） ===
   for (let r = 0; r < ROWS; r++) {
@@ -1368,9 +1372,11 @@ function gameLoop() {
       }
     }
     // 平滑过渡嘴巴/眼睛/膨胀（嘴巴响应更快，眼睛温和）
-    const mouthTarget = beastState.feeding ? beastState.feedIntensity : 0;
-    const eyeTarget = beastState.feeding ? beastState.feedIntensity * 0.5 : 0;
-    const swellTarget = beastState.feeding ? beastState.feedIntensity * 0.4 : 0;
+    // 灭亡动画期间碳兽嘴巴保持张开
+    const isBadEnding = endingState.active && endingState.type === 'bad';
+    const mouthTarget = beastState.feeding ? beastState.feedIntensity : (isBadEnding ? 0.8 : 0);
+    const eyeTarget = beastState.feeding ? beastState.feedIntensity * 0.5 : (isBadEnding ? 0.4 : 0);
+    const swellTarget = beastState.feeding ? beastState.feedIntensity * 0.4 : (isBadEnding ? 0.3 : 0);
     beastState.mouthOpenness += (mouthTarget - beastState.mouthOpenness) * 0.12;
     beastState.eyeExcitement += (eyeTarget - beastState.eyeExcitement) * 0.06;
     beastState.bodySwelling += (swellTarget - beastState.bodySwelling) * 0.05;

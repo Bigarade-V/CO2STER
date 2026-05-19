@@ -288,7 +288,7 @@ function _processSettlePhaseInner(canvas) {
       // 胜利条件：净生产力≥50 + 净发电力≥15 + CO2=0
       if (!gameState.gameOver && gameState.civilizationLevel >= 3 && gameState.co2 === 0) {
         const balance = getTurnResourceBalance();
-        if (balance.net >= 50 && balance.power >= 15) {
+        if (balance.net >= 50 && balance.power >= 15 && countSettlements() >= 7) {
           gameState.gameWon = true;
           triggerEnding('good');
           playVictoryMusic();
